@@ -1,0 +1,1 @@
+"""RAG boundary contracts."""
