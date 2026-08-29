@@ -34,3 +34,4 @@ rag/data/*
 .idea/
 .DS_Store
 Thumbs.db
+rag/data/*.db

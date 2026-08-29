@@ -7,5 +7,8 @@ python-dotenv>=1.0,<2.0
 # Vector database client
 qdrant-client>=1.12,<2.0
 
+# Token counting for BAAI/bge-m3 without loading an embedding model
+transformers>=4.45,<5.0
+
 # Tests
 pytest>=8.0,<9.0
