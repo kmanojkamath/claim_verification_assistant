@@ -36,37 +36,7 @@ async def create_vector_collection():
     await create_corpus()
     return
 
-llm = ChatGroq(name="openai/gpt-oss-120b",temperature=0.3)
-
-sys1 = """Verify the CLAIM using only the numbered CORPUS evidence given (pre-vetted government sources,
- but possibly outdated). Compare evidence dates; trust the most recent if items conflict.
- Never use outside knowledge or invent facts not stated in the evidence.
- Cite evidence strictly by index; never fabricate a citation. If evidence is insufficient, say so plainly rather than guessing.
-Reply with ONLY this JSON: 
-    {"verdict":"true|false|partially_true|outdated|unverifiable",
-    "confidence":"high|medium|low","reasoning":"1-2 sentences",
-    "cited_evidence":[indices],
-    "conflicting_evidence":true|false,
-    "most_recent_evidence_date":"date or null",
-    "staleness_note":"note or null"}
-"""
-
-
-sys2 = """Verify the CLAIM using only the numbered LIVE WEB evidence given (fresh but unvetted; weigh publisher credibility).
- Compare evidence dates; trust the most recent if items conflict.
- Never use outside knowledge or invent facts not stated in the evidence.
- Cite evidence strictly by index; never fabricate a citation.
- If evidence is insufficient, say so plainly rather than guessing.
-Reply with ONLY this JSON:
-    {"verdict":"true|false|partially_true|outdated|unverifiable",
-    "confidence":"high|medium|low",
-    "reasoning":"1-2 sentences",
-    "cited_evidence":[indices],
-    "conflicting_evidence":true|false,
-    "most_recent_evidence_date":"date or null",
-    "staleness_note":"note or null"}
-"""
-
+llm = ChatGroq(name="openai/gpt-oss-120b",temperature=0.3,api_key=os.getenv("GROQ_API"))
 
 third_umpire_prompt ="""
 You get two verification JSONs for one claim: corpus (pre-vetted, may be stale) and live_web (fresh, less vetted).
@@ -110,6 +80,10 @@ def _parse_verification(raw: Union[str, dict], label: str) -> dict:
  
 
 def merge_status(claim: str,corpus_result: Union[str, dict],web_result: Union[str, dict]) -> str:
+    if isinstance(web_result,str):
+        _parse_verification(web_result)
+    if isinstance(corpus_result,str):
+        _parse_verification(corpus_result)
     payload = {
         "claim": claim,
         "corpus": corpus_result,
@@ -128,18 +102,11 @@ async def main():
             return {"content":"something"}
         records=arya_func()
         top5 = records[-5:]
-        conv = [SystemMessage(content=sys1),
-                HumanMessage(content=data["query"]),
-                AIMessage(content=f"Here are the top 5 chunks from web search {top5}"),
-                HumanMessage(content="Verify whether my claim is true or false.")]
-        web_verification = llm.ainvoke(conv)[-1].content
+        from rag.generation.llm import generate
+        web_verification = generate(query=data["query"],retrieved_chunks=top5)
         from rag.retrieval.vector_store import store
         top5 = store.retrieve(query=data["query"])
-        conv = [SystemMessage(content=sys2),
-                HumanMessage(content=data["query"]),
-                AIMessage(content=f"Here are the top 5 chunks from corpus {top5}"),
-                HumanMessage(content="Verify whether my claim is true or false.")]
-        corp_verification = llm.ainvoke(conv)[-1].content
+        corp_verification = generate(query=data["query"],retrieved_chunks=top5)
         conv = [SystemMessage(content=third_umpire_prompt)
                 ,merge_status(claim=data["query"],web_result=web_verification,corpus_result=corp_verification)]
         final_verdict = llm.ainvoke(conv)[-1].content
