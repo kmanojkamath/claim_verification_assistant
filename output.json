@@ -1,0 +1,19 @@
+{
+  "raw_text": "Google 100\n\n20\n\nGoogle\n\n100 | 20\n\nYoutube\n\n90\n\n30\n\nYoutube\n\n90\n\n30\n\n80\n\n40\n\nFacebook\n\nFacebook\n\n80\n\n40\n\nWhatsApp\n\n70\n\n90\n\nYahoo\n\n60\n\n70\n\nWhatsApp\n\n70\n\n50\n\n60\n\n| 6\n\nInstagram\n\nYahoo 60\n\n70\n\n6\n\nInstagram\n\n50\n\n|\n\nGoogle\n\n100 | 90 | 80\n\n|\n\nGoogle, 100, 90, 80\n\nYoutube\n\n90 | 80\n\n70\n\nYoutube, 90, 80, 70\n\nFacebook\n\n70 | 60| 50\n\nWhatsApp\n\n50 | 40| 30\n\n|\n\n|\n\nFacebook, 70, 60, 50\n\nWhatsApp. 50, 40. 30\n\nnWoUmh",
+  "query": "What do the numbers and statistics associated with Google, YouTube, Facebook, WhatsApp, Yahoo, and Instagram represent?",
+  "keywords": [
+    "Google",
+    "YouTube",
+    "Facebook",
+    "WhatsApp",
+    "Yahoo",
+    "Instagram",
+    "statistics"
+  ],
+  "category": "Technology",
+  "subcategory": "Social Media Statistics",
+  "claim_type": "Statistic",
+  "is_government_related": false,
+  "is_current_affairs": false,
+  "is_time_sensitive": true
+}
