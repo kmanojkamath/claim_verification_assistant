@@ -36,6 +36,7 @@ def test_document_accepts_a_valid_contract_payload() -> None:
     document = Document.model_validate(valid_document_payload())
 
     assert document.source_type is SourceType.GOVERNMENT_DOCUMENT
+    assert document.published_at == datetime.fromisoformat("2026-08-20T10:30:00+05:30")
     assert document.retrieved_at == datetime.fromisoformat("2026-08-29T17:05:12+05:30")
     assert str(document.url) == "https://pib.gov.in/PressReleasePage.aspx?PRID=1234567"
     assert document.sections is None
@@ -65,6 +66,30 @@ def test_section_accepts_valid_content_and_rejects_invalid_required_values() -> 
 
 @pytest.mark.parametrize("field,value", [("document_id", "  "), ("content", "")])
 def test_document_rejects_empty_required_strings(field: str, value: str) -> None:
+    payload = valid_document_payload()
+    payload[field] = value
+
+    with pytest.raises(ValidationError):
+        Document.model_validate(payload)
+
+
+@pytest.mark.parametrize(
+    "field",
+    ["document_id", "source_type", "content", "url", "retrieved_at", "language"],
+)
+def test_document_rejects_missing_required_fields(field: str) -> None:
+    payload = valid_document_payload()
+    payload.pop(field)
+
+    with pytest.raises(ValidationError):
+        Document.model_validate(payload)
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [("source_type", "untrusted_source"), ("url", "not a URL")],
+)
+def test_document_rejects_invalid_source_type_and_url(field: str, value: str) -> None:
     payload = valid_document_payload()
     payload[field] = value
 

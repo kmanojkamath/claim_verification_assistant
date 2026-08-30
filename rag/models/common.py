@@ -71,7 +71,9 @@ def validate_language_tag(value: str) -> str:
 
     ensure_non_empty(value, "language")
     if not LANGUAGE_TAG_PATTERN.fullmatch(value):
-        raise ValueError("language must be a BCP-47 language tag, such as 'en' or 'en-IN'")
+        raise ValueError(
+            "language must be a BCP-47 language tag, such as 'en' or 'en-IN'"
+        )
     return value
 
 

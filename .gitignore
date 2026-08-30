@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f2f3de8e9521f5bb72ea091bb186af12e349e380
 # Python bytecode and tooling
 __pycache__/
 *.py[cod]
@@ -34,8 +37,16 @@ dist/
 .idea/
 .DS_Store
 Thumbs.db
+<<<<<<< HEAD
 =======
 __pycache__
 Upload/
 myvenv
 >>>>>>> 688e1e89c06f4d19db2c71fa8f802e6fed4438e0
+=======
+rag/data/*.db
+
+myvenv
+
+corpus/pib_releases/main_corpus.db
+>>>>>>> f2f3de8e9521f5bb72ea091bb186af12e349e380
