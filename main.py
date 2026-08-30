@@ -99,6 +99,8 @@ async def main():
     data = None
     with open("rag/data/query.json",'r') as f: # File name needs to be changed
         data = json.load(f)
+        with open("scraping/x_tracter/query_data.json",'w') as fr:
+            json.dump(f,fr)
     print(type(data))
     if data:
         with open("rag/data/web_search.json",'r') as f:
