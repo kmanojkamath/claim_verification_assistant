@@ -18,11 +18,11 @@ class FinalVerdict(BaseModel):
     confidence: List[str] = Field(description="How confident you are on the scale of 1.0 to 10.0")
 
 async def create_corpus():
-    from rag.ingestion.corpus import iter_chunk_from_sqlite
+    from rag.ingestion.corpus import iter_chunks_from_sqlite
     from pathlib import Path
     from rag.retrieval.vector_store import store
-    for chunk in iter_chunk_from_sqlite(Path("rag/data/main_corpus.db")):
-        store.ingest_chunks([chunk])
+    for chunk in iter_chunks_from_sqlite(Path("rag/data/main_corpus.db")):
+        await store.ingest_chunks([chunk])
 
 async def create_vector_collection():
     from qdrant_client import AsyncQdrantClient
@@ -31,17 +31,18 @@ async def create_vector_collection():
     if await client.collection_exists(collection_name=collection_name):
         collection_info = await client.get_collection(collection_name=collection_name)
         points_count = collection_info.points_count
-        if points_count >= 35000:
+        if points_count >= 15000:
             return
         else:
             print("Meow")
-            # await client.delete_collection("pib_chunks")
-            # await entry()
+            from rag.retrieval.vector_store import entry
+            await client.delete_collection("pib_chunks")
+            await entry()
     else:
         from rag.retrieval.vector_store import entry
         print("Meow 2")
-        # await entry()
-    # await create_corpus()
+        await entry()
+    await create_corpus()
     return
 
 llm = ChatGroq(model="openai/gpt-oss-120b",temperature=0.3,api_key=os.getenv("GROQ_API"))
@@ -96,33 +97,36 @@ async def main():
         with open("rag/data/web_search.json",'r') as f:
             records = json.load(f)
         print(type(records[0]))
-        top5_raw = records[-5:]
-        top5 = [
-            SimpleNamespace(
-                chunk_id=str(i),
-                document_id=r["doc_id"],
-                content=r["content"]["clean_text"],
-                title=r.get("title"),
-                url=r["source"].get("source_url"),
-                publisher=r["source"].get("organization") or r["source"].get("author_name"),
-                author=r["source"].get("author_name"),
-                published_at=r["dates"].get("published_at"),
-                section_heading=None,
-                source_type=r["source"].get("source_type"),
-            )
-            for i, r in enumerate(top5_raw)
-        ]
-        from rag.generation.llm import generate
-        from rag.generation.llm import GroqLLM
-        web_verification = await generate(query=data["query"],retrieved_chunks=top5,llm=GroqLLM(client=llm))
-        from rag.retrieval.vector_store import store
-        top5 = store.retrieve(query=data["query"])
+        # top5_raw = records[-5:]
+        # top5 = [
+        #     SimpleNamespace(
+        #         chunk_id=str(i),
+        #         document_id=r["doc_id"],
+        #         content=r["content"]["clean_text"],
+        #         title=r.get("title"),
+        #         url=r["source"].get("source_url"),
+        #         publisher=r["source"].get("organization") or r["source"].get("author_name"),
+        #         author=r["source"].get("author_name"),
+        #         published_at=r["dates"].get("published_at"),
+        #         section_heading=None,
+        #         source_type=r["source"].get("source_type"),
+        #     )
+        #     for i, r in enumerate(top5_raw)
+        # ]
+        # from rag.generation.llm import generate
+        # from rag.generation.llm import GroqLLM
+        # web_verification = await generate(query=data["query"],retrieved_chunks=top5,llm=GroqLLM(client=llm))
+        # from rag.retrieval.vector_store import store
+        # top5 = store.retrieve(query=data["query"])
         # corp_verification = generate(query=data["query"],retrieved_chunks=top5)
         # conv = [SystemMessage(content=third_umpire_prompt)
         #         ,merge_status(claim=data["query"],web_result=web_verification,corpus_result=corp_verification)]
         # final_verdict = structured_llm.ainvoke(conv)[-1].content
-        print(web_verification)
+        print("Hello")
     else:
         print("No request made.")
+    from rag.retrieval.vector_store import store
+    if store is not None:
+        await store.client.close()
 
 asyncio.run(main())

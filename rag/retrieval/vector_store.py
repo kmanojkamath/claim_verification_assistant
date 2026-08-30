@@ -356,5 +356,3 @@ async def entry():
     # for r in results:
     #     print(r.score, r.title, r.chunk_id)
 
-    await client.close()
-
