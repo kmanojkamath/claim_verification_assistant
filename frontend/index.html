@@ -275,7 +275,7 @@
                 <div class="drop-zone-text">Click to browse or <span>drag file here</span></div>
                 <span class="drop-zone-hint">Supports PDF, PNG, JPG</span>
             </div>
-            <input type="file" id="fileInput" accept=".pdf,image/png,image/jpeg,image/jpg" required onchange="updateFileName()">
+            <input type="file" id="fileInput" accept=".pdf,image/png,image/jpeg,image/jpg,image/avif,.txt" required onchange="updateFileName()">
             <div id="fileNameDisplay"></div>
             <button type="submit" class="btn-submit">Upload File</button>
         </form>
@@ -340,6 +340,7 @@
                 showStatus(data.message, true);
                 fileInput.value = '';
                 updateFileName();
+                console.log(data.file)
             } else {
                 showStatus(data.detail || 'Upload failed.', false);
             }
@@ -365,16 +366,17 @@
             if (res.ok) {
                 showStatus(data.message, true);
                 textInput.value = '';
+                console.log(data.file);
             } else {
                 showStatus(data.detail || 'Upload failed.', false);
             }
+            console.log(res);
         } catch (err) {
             showStatus('Server error. Is FastAPI running on port 8000?', false);
         } finally {
-            btn.textContent = 'Convert to .txt & Save';
+            btn.textContent = 'Upload';
         }
     }
 </script>
-
 </body>
 </html>
