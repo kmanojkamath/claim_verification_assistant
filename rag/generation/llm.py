@@ -25,50 +25,55 @@ class StructuredLLM(Protocol):
     async def complete(self, *, system_prompt: str, user_prompt: str) -> str: ...
 
 
-class XAILLM:
-    """xAI Responses API client returning strict JSON-schema output."""
+class GroqLLM:
+    """ChatGroq client returning schema-constrained grounded output."""
 
-    BASE_URL = "https://api.x.ai/v1"
+    DEFAULT_MODEL = "openai/gpt-oss-120b"
+    TEMPERATURE = 0.3
 
     def __init__(self, model: str | None = None, client: Any | None = None) -> None:
-        self.model = model or os.getenv("XAI_MODEL")
-        if not self.model:
-            raise GenerationError("XAI_MODEL must be configured for xAI generation")
+        self.model = model or os.getenv("GROQ_MODEL", self.DEFAULT_MODEL)
         if client is None:
-            api_key = os.getenv("XAI_API_KEY")
+            api_key = os.getenv("GROQ_API")
             if not api_key:
-                raise GenerationError("XAI_API_KEY must be configured for xAI generation")
+                raise GenerationError("GROQ_API must be configured for Groq generation")
             try:
-                from openai import AsyncOpenAI
+                from langchain_groq import ChatGroq
             except ImportError as error:
-                raise GenerationError("Install the 'openai' package to use xAI generation") from error
-            self.client = AsyncOpenAI(api_key=api_key, base_url=self.BASE_URL)
+                raise GenerationError("Install the 'langchain-groq' package to use Groq generation") from error
+            self.client = ChatGroq(
+                model=self.model,
+                temperature=self.TEMPERATURE,
+                api_key=api_key,
+            )
         else:
             self.client = client
 
     async def complete(self, *, system_prompt: str, user_prompt: str) -> str:
         try:
-            response = await self.client.responses.create(
-                model=self.model,
-                input=[
+            structured_client = self.client.with_structured_output(
+                LLMGenerationOutput,
+                method="json_schema",
+            )
+            response = await structured_client.ainvoke(
+                [
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt},
-                ],
-                text={
-                    "format": {
-                        "type": "json_schema",
-                        "name": "grounded_answer",
-                        "strict": True,
-                        "schema": LLMGenerationOutput.model_json_schema(),
-                    }
-                },
+                ]
             )
         except Exception as error:
-            raise GenerationError("xAI generation request failed") from error
-        output_text = getattr(response, "output_text", None)
-        if not isinstance(output_text, str) or not output_text.strip():
-            raise GenerationError("xAI returned no structured answer text")
-        return output_text
+            raise GenerationError("Groq generation request failed") from error
+        try:
+            if isinstance(response, LLMGenerationOutput):
+                return response.model_dump_json()
+            if isinstance(response, dict):
+                return LLMGenerationOutput.model_validate(response).model_dump_json()
+            content = getattr(response, "content", None)
+            if isinstance(content, str) and content.strip():
+                return content
+        except (ValidationError, ValueError) as error:
+            raise GenerationError("Groq returned malformed structured output") from error
+        raise GenerationError("Groq returned no structured answer")
 
 
 class GenerationService:
@@ -145,4 +150,4 @@ async def generate(
 
     if not retrieved_chunks and llm is None:
         return GenerationService.no_evidence_result(query)
-    return await GenerationService(llm or XAILLM()).generate(query, retrieved_chunks)
+    return await GenerationService(llm or GroqLLM()).generate(query, retrieved_chunks)
