@@ -37,3 +37,5 @@ Thumbs.db
 rag/data/*.db
 
 myvenv
+
+corpus/pib_releases/main_corpus.db

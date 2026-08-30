@@ -7,7 +7,7 @@ DB_FILE = "main_corpus.db"
 # Automatic corpus building.
 # Set this once to the first date you want the automatic builder to process.
 # Example: "01-01-2025"
-AUTO_START_DATE = "01-01-2025"
+AUTO_START_DATE = "09-01-2026"
 
 # Automatic mode processes up to yesterday by default. This avoids repeatedly
 # crawling the current day while PIB may still be publishing releases.
