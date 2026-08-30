@@ -16,6 +16,8 @@ class LLMGenerationOutput(ContractModel):
 
     answer: str
     citations: list[int] = Field(default_factory=list)
+    verdict: str = Field(description="'True' if the claim is true, 'False' if the claim is false and 'Unverifiable' otherwise.")
+    confidence: float = Field(description="confidence score on the scale of 0.0 to 10.0")
 
     @field_validator("answer")
     @classmethod
@@ -41,10 +43,11 @@ class GenerationCitation(ContractModel):
 
 class GenerationResult(ContractModel):
     """Application-level grounded answer and only its supporting sources."""
-
+    verdict: str = Field(description="'True' if the claim is true, 'False' if the claim is false and 'Unverifiable' otherwise.")
     answer: str
     citations: list[GenerationCitation] = Field(default_factory=list)
-
+    confidence: float = Field(description="confidence score on the scale of 0.0 to 10.0")
+    
     @field_validator("answer")
     @classmethod
     def answer_must_not_be_empty(cls, value: str) -> str:

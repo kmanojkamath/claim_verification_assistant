@@ -114,7 +114,12 @@ class GenerationService:
         citations = self._resolve_citations(output.citations, retrieved_chunks)
         if output.citations and not citations:
             return self.no_evidence_result(query)
-        return GenerationResult(answer=output.answer, citations=citations)
+        return GenerationResult(
+            answer=output.answer,
+            citations=citations,
+            verdict=output.verdict,        
+            confidence=output.confidence   
+        )
 
     @staticmethod
     def _resolve_citations(
