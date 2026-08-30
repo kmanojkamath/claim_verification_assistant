@@ -16,7 +16,7 @@ app.add_middleware(
 UPLOAD_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Upload")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-ALLOWED_EXTENSIONS = {"pdf", "png", "jpg", "jpeg"}
+ALLOWED_EXTENSIONS = {"pdf", "png", "jpg", "jpeg", "avif", "txt"}
 
 @app.post("/upload/file")
 async def upload_file(file: UploadFile = File(...)):
@@ -30,7 +30,7 @@ async def upload_file(file: UploadFile = File(...)):
     with open(file_path, "wb") as f:
         f.write(contents)
         
-    return {"message": f"File saved successfully to Upload/{file.filename}"}
+    return {"message": f"File saved successfully to Upload/{file.filename}", "file":file.filename}
 
 @app.post("/upload/text")
 async def upload_text(text: str = Form(...)):
@@ -44,4 +44,4 @@ async def upload_text(text: str = Form(...)):
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(text)
         
-    return {"message": f"Text converted and saved to Upload/{filename}"}
+    return {"message": f"Text converted and saved to Upload/{filename}", "file":f"{filename}"}
