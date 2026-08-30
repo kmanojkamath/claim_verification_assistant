@@ -1,14 +1,17 @@
 import os
 from datetime import datetime
-from fastapi import FastAPI, File, UploadFile, Form, HTTPException
+from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from typing import List
 
 app = FastAPI()
 
-# CORS
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -18,11 +21,36 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 ALLOWED_EXTENSIONS = {"pdf", "png", "jpg", "jpeg", "avif", "txt"}
 
-@app.post("/upload/file")
+class VerificationReport(BaseModel):
+    message: str
+    file: str
+    verdict: str  # "True", "False", or "Unverifiable"
+    citations: List[str]
+    confidence: List[float]
+
+class TextSubmission(BaseModel):
+    text: str
+
+def run_verification_engine(content_summary: str) -> dict:
+    """
+    Placeholder for your verification logic/LLM pipeline.
+    Replace this with your actual verification/search model logic.
+    """
+    return {
+        "verdict": "False",
+        "citations": [
+            "https://egazette.gov.in/WriteReadData/2026/notification-114532.pdf",
+            "https://pib.gov.in/PressReleasePage.aspx?PRID=2098451",
+            "https://data.gov.in/resource/state-wage-notifications-2026"
+        ],
+        "confidence": [9.1, 8.4, 7.8]
+    }
+
+@app.post("/upload/file", response_model=VerificationReport)
 async def upload_file(file: UploadFile = File(...)):
     ext = file.filename.split(".")[-1].lower() if "." in file.filename else ""
     if ext not in ALLOWED_EXTENSIONS:
-        raise HTTPException(status_code=400, detail="Invalid file type. Only PDF and images allowed.")
+        raise HTTPException(status_code=400, detail="Invalid file type.")
     
     file_path = os.path.join(UPLOAD_DIR, file.filename)
     contents = await file.read()
@@ -30,10 +58,17 @@ async def upload_file(file: UploadFile = File(...)):
     with open(file_path, "wb") as f:
         f.write(contents)
         
-    return {"message": f"File saved successfully to Upload/{file.filename}", "file":file.filename}
+    report_data = run_verification_engine(file.filename)
+    
+    return {
+        "message": f"File saved and verified.",
+        "file": file.filename,
+        **report_data
+    }
 
-@app.post("/upload/text")
-async def upload_text(text: str = Form(...)):
+@app.post("/upload/text", response_model=VerificationReport)
+async def upload_text(payload: TextSubmission):
+    text = payload.text
     if not text.strip():
         raise HTTPException(status_code=400, detail="Text content cannot be empty.")
     
@@ -44,4 +79,10 @@ async def upload_text(text: str = Form(...)):
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(text)
         
-    return {"message": f"Text converted and saved to Upload/{filename}", "file":f"{filename}"}
+    report_data = run_verification_engine(text)
+    
+    return {
+        "message": f"Text claim processed.",
+        "file": filename,
+        **report_data
+    }
