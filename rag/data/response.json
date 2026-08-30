@@ -1,0 +1,34 @@
+{
+    "verdict": "False",
+    "answer": "No, the government is not providing Rs\u202f50,000 in unemployment support through a new Rojgar Sahayata Portal; the claim is false and no such scheme exists.",
+    "citations": [
+        {
+            "source_number": 1,
+            "chunk_id": "0",
+            "document_id": "X_9001112223334445",
+            "title": "X post by @PIBFactCheck",
+            "url": "https://x.com/PIBFactCheck/status/9001112223334445",
+            "publisher": "PIB Fact Check",
+            "source_type": "social_media"
+        },
+        {
+            "source_number": 2,
+            "chunk_id": "1",
+            "document_id": "WEB_7734891002",
+            "title": "Fake 'Rojgar Sahayata' Scheme Message Debunked by Ministry",
+            "url": "https://example-newsdaily.in/fake-rojgar-scheme-debunked",
+            "publisher": "Example News Daily",
+            "source_type": "webpage"
+        },
+        {
+            "source_number": 5,
+            "chunk_id": "4",
+            "document_id": "PIB_2231098",
+            "title": "Ministry of Labour and Employment Denies 'Rojgar Sahayata' Scheme",
+            "url": "https://www.pib.gov.in/PressReleseDetailm.aspx?PRID=2231098",
+            "publisher": "Ministry of Labour and Employment",
+            "source_type": "webpage"
+        }
+    ],
+    "confidence": 9.5
+}

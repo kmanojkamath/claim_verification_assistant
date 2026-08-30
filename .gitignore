@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Python bytecode and tooling
 __pycache__/
 *.py[cod]
@@ -25,7 +26,6 @@ dist/
 *.egg-info/
 
 # Local application data and logs
-rag/data/*
 !rag/data/sample_documents.json
 *.log
 
@@ -34,3 +34,8 @@ rag/data/*
 .idea/
 .DS_Store
 Thumbs.db
+=======
+__pycache__
+Upload/
+myvenv
+>>>>>>> 688e1e89c06f4d19db2c71fa8f802e6fed4438e0

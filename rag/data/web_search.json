@@ -1,0 +1,159 @@
+[
+  {
+    "doc_id": "X_9001112223334445",
+    "title": "X post by @PIBFactCheck",
+    "source": {
+      "platform": "X",
+      "source_type": "social_media",
+      "source_url": "https://x.com/PIBFactCheck/status/9001112223334445",
+      "organization": "PIB Fact Check",
+      "author_handle": "PIBFactCheck",
+      "author_name": "PIB Fact Check"
+    },
+    "dates": {
+      "published_at": "2026-08-20T09:15:00Z",
+      "retrieved_at": "2026-08-30T10:00:00Z"
+    },
+    "content": {
+      "raw_text": "Attention Job Seekers! A message claiming the Government is giving Rs 50,000 to every unemployed youth via a new 'Rojgar Sahayata Portal' is FALSE.\n\n#PIBFactCheck\n\nNo such scheme exists. Do not share your bank details on any linked website. Report suspicious messages to the official fact-check helpline.",
+      "clean_text": "Attention Job Seekers! A message claiming the Government is giving Rs 50,000 to every unemployed youth via a new 'Rojgar Sahayata Portal' is FALSE.\n\n#PIBFactCheck\n\nNo such scheme exists. Do not share your bank details on any linked website. Report suspicious messages to the official fact-check helpline."
+    },
+    "entities": {
+      "hashtags": [
+        "PIBFactCheck"
+      ],
+      "mentions": [],
+      "urls": []
+    },
+    "metadata": {
+      "language": "en",
+      "authority_level": "official",
+      "content_hash": "5e3aa0b32407dede0621aa62724e4823a6b0d104601356f2985b0df211400b29",
+      "document_type": "social_media_post"
+    }
+  },
+  {
+    "doc_id": "WEB_7734891002",
+    "title": "Fake 'Rojgar Sahayata' Scheme Message Debunked by Ministry",
+    "source": {
+      "platform": "Web",
+      "source_type": "webpage",
+      "source_url": "https://example-newsdaily.in/fake-rojgar-scheme-debunked",
+      "organization": "Example News Daily",
+      "author_handle": null,
+      "author_name": "Staff Reporter"
+    },
+    "dates": {
+      "published_at": "2026-08-21T14:30:00Z",
+      "retrieved_at": "2026-08-30T10:00:00Z"
+    },
+    "content": {
+      "raw_text": "A viral WhatsApp forward claiming a new government portal offers Rs 50,000 in unemployment support has been debunked by officials. The Ministry of Labour confirmed no such scheme or portal exists, and urged citizens to avoid clicking links shared in the forwarded message, which redirects to a phishing page requesting bank account details.",
+      "clean_text": "A viral WhatsApp forward claiming a new government portal offers Rs 50,000 in unemployment support has been debunked by officials. The Ministry of Labour confirmed no such scheme or portal exists, and urged citizens to avoid clicking links shared in the forwarded message, which redirects to a phishing page requesting bank account details."
+    },
+    "entities": {
+      "hashtags": [],
+      "mentions": [],
+      "urls": []
+    },
+    "metadata": {
+      "language": "en",
+      "authority_level": "verified_media",
+      "content_hash": "d69fe143147ff25e15c9fe0289f2eab0f51ae45ff31a5b2803c0910f27f5086d",
+      "document_type": "news_article"
+    }
+  },
+  {
+    "doc_id": "WEB_5512203987",
+    "title": "Is the Rojgar Sahayata Cash Scheme Real? Still Checking.",
+    "source": {
+      "platform": "Web",
+      "source_type": "webpage",
+      "source_url": "https://example-personalblog.com/posts/rojgar-scheme-real",
+      "organization": null,
+      "author_handle": null,
+      "author_name": "Anita R."
+    },
+    "dates": {
+      "published_at": "2026-08-18T08:05:00Z",
+      "retrieved_at": "2026-08-30T10:00:00Z"
+    },
+    "content": {
+      "raw_text": "Getting a lot of messages about this 'Rojgar Sahayata Portal' cash scheme going around. Couldn't find anything on the actual labour ministry site about it, so I'd hold off sharing your details until someone official confirms one way or the other. Will update this post if I hear more.",
+      "clean_text": "Getting a lot of messages about this 'Rojgar Sahayata Portal' cash scheme going around. Couldn't find anything on the actual labour ministry site about it, so I'd hold off sharing your details until someone official confirms one way or the other. Will update this post if I hear more."
+    },
+    "entities": {
+      "hashtags": [],
+      "mentions": [],
+      "urls": []
+    },
+    "metadata": {
+      "language": "en",
+      "authority_level": "unverified",
+      "content_hash": "752be2d7fb1bfdf154e5dc5c6d2957aeb6dab0965573418fe12ad15498ff6339",
+      "document_type": "blog_post"
+    }
+  },
+  {
+    "doc_id": "X_9004455667788",
+    "title": "X post by @DeshRozgarUpdates",
+    "source": {
+      "platform": "X",
+      "source_type": "social_media",
+      "source_url": "https://x.com/DeshRozgarUpdates/status/9004455667788",
+      "organization": null,
+      "author_handle": "DeshRozgarUpdates",
+      "author_name": "Desh Rozgar Updates"
+    },
+    "dates": {
+      "published_at": "2026-08-17T19:40:00Z",
+      "retrieved_at": "2026-08-30T10:00:00Z"
+    },
+    "content": {
+      "raw_text": "Just got Rs 50,000 confirmation SMS from the new Rojgar Sahayata scheme!! Apply before slots close, link in bio. Share with anyone who's unemployed, this is legit!!",
+      "clean_text": "Just got Rs 50,000 confirmation SMS from the new Rojgar Sahayata scheme!! Apply before slots close, link in bio. Share with anyone who's unemployed, this is legit!!"
+    },
+    "entities": {
+      "hashtags": [],
+      "mentions": [],
+      "urls": []
+    },
+    "metadata": {
+      "language": "en",
+      "authority_level": "unverified",
+      "content_hash": "2193cb0dcf6693fab22bb83a01e519500929270baa1cbbc78e41c7b637a229b3",
+      "document_type": "social_media_post"
+    }
+  },
+  {
+    "doc_id": "PIB_2231098",
+    "title": "Ministry of Labour and Employment Denies 'Rojgar Sahayata' Scheme",
+    "source": {
+      "platform": "Web",
+      "source_type": "webpage",
+      "source_url": "https://www.pib.gov.in/PressReleseDetailm.aspx?PRID=2231098",
+      "organization": "Ministry of Labour and Employment",
+      "author_handle": null,
+      "author_name": "PIB Delhi"
+    },
+    "dates": {
+      "published_at": "2026-08-22T11:00:00Z",
+      "retrieved_at": "2026-08-30T10:00:00Z"
+    },
+    "content": {
+      "raw_text": "The Ministry of Labour and Employment clarifies that it has not launched any scheme titled 'Rojgar Sahayata Portal' and has not authorized any cash disbursement of Rs 50,000 to unemployed citizens. The public is advised to rely only on the Ministry's official website for information regarding employment support programmes. Legal action is being pursued against the operators of the fraudulent portal.",
+      "clean_text": "The Ministry of Labour and Employment clarifies that it has not launched any scheme titled 'Rojgar Sahayata Portal' and has not authorized any cash disbursement of Rs 50,000 to unemployed citizens. The public is advised to rely only on the Ministry's official website for information regarding employment support programmes. Legal action is being pursued against the operators of the fraudulent portal."
+    },
+    "entities": {
+      "hashtags": [],
+      "mentions": [],
+      "urls": []
+    },
+    "metadata": {
+      "language": "en",
+      "authority_level": "official",
+      "content_hash": "a73ed4c1d34675e5b7aa2a494290e590ddaecfd07580ff2a2c90159b80a84d1b",
+      "document_type": "press_release"
+    }
+  }
+]

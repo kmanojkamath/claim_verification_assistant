@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hackathon Uploader</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00159d;
+            --primary-hover: #0f73d1;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --error: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(at 100% 0%, #e0e7ff 0px, transparent 50%),
+                              radial-gradient(at 0% 100%, #e0e7ff 0px, transparent 50%);
+            min-height: 100vh;
+        }
+
+        
+        h1 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            margin: 0;
+            padding: 16px 32px;
+            background-color: #0f172a;
+            color: #ffffff;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            box-sizing: border-box;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid #1e293b;
+            z-index: 1000;
+        }
+
+        
+        .page-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 100px 20px 40px; 
+        }
+
+        .container {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h2 {
+            color: var(--text-main);
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        
+        .tab-buttons {
+            display: flex;
+            background: #f1f5f9;
+            padding: 6px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            gap: 4px;
+        }
+
+        .tab-buttons button {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .tab-buttons button.active {
+            background: var(--card-bg);
+            color: var(--text-main);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .upload-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .hidden { display: none !important; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        
+        .drop-zone {
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            padding: 40px 20px;
+            text-align: center;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .drop-zone:hover {
+            border-color: var(--primary);
+            background: #eef2ff;
+        }
+
+        .drop-zone svg {
+            width: 48px;
+            height: 48px;
+            fill: var(--text-muted);
+            margin-bottom: 12px;
+            transition: fill 0.2s ease;
+        }
+
+        .drop-zone:hover svg { fill: var(--primary); }
+
+        .drop-zone-text {
+            font-size: 14px;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .drop-zone-text span { color: var(--primary); }
+
+        .drop-zone-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 6px;
+            display: block;
+        }
+
+        #fileInput { display: none; }
+        
+        #fileNameDisplay {
+            font-size: 14px;
+            color: var(--primary);
+            font-weight: 500;
+            text-align: center;
+            min-height: 20px;
+        }
+
+        
+        textarea {
+            width: 100%;
+            height: 160px;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            resize: none;
+            font-size: 14px;
+            color: var(--text-main);
+            background: #f8fafc;
+            transition: border-color 0.2s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--card-bg);
+            box-shadow: 0 0 0 4px #eef2ff;
+        }
+
+        
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(70, 134, 229, 0.2);
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        
+        #status {
+            margin-top: 20px;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            display: none;
+        }
+
+        .status-success {
+            background: #ecfdf5;
+            color: #047857;
+            border: 1px solid #a7f3d0;
+            display: block !important;
+        }
+
+        .status-error {
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+            display: block !important;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Hecker</h1>
+
+<div class="page-wrapper">
+    <div class="container">
+        <div class="header">
+            <h2>Upload documents</h2>
+            <p>Upload your files or raw text.</p>
+        </div>
+        
+        <div class="tab-buttons">
+            <button id="fileTabBtn" class="active" onclick="switchTab('file')">File Upload</button>
+            <button id="textTabBtn" onclick="switchTab('text')">Raw Text</button>
+        </div>
+
+        <!-- File Form -->
+        <form id="fileForm" class="upload-section" onsubmit="handleFileUpload(event)">
+            <div class="drop-zone" onclick="document.getElementById('fileInput').click()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M11 15h2V9h3l-4-5-4 5h3z"/>
+                    <path d="M20 18H4v-7H2v7c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-7h-2v7z"/>
+                </svg>
+                <div class="drop-zone-text">Click to browse or <span>drag file here</span></div>
+                <span class="drop-zone-hint">Supports PDF, PNG, JPG</span>
+            </div>
+            <input type="file" id="fileInput" accept=".pdf,image/png,image/jpeg,image/jpg" required onchange="updateFileName()">
+            <div id="fileNameDisplay"></div>
+            <button type="submit" class="btn-submit">Upload File</button>
+        </form>
+
+        <!-- Text Form -->
+        <form id="textForm" class="upload-section hidden" onsubmit="handleTextUpload(event)">
+            <textarea id="textInput" placeholder="Paste your raw text content here..." required></textarea>
+            <button type="submit" class="btn-submit">Convert to .txt & Save</button>
+        </form>
+
+        <div id="status"></div>
+    </div>
+</div>
+
+<script>
+    const API_URL = "http://127.0.0.1:8000";
+
+    function switchTab(tab) {
+        document.getElementById('fileForm').classList.toggle('hidden', tab !== 'file');
+        document.getElementById('textForm').classList.toggle('hidden', tab !== 'text');
+        document.getElementById('fileTabBtn').classList.toggle('active', tab === 'file');
+        document.getElementById('textTabBtn').classList.toggle('active', tab === 'text');
+        clearStatus();
+    }
+
+    function updateFileName() {
+        const input = document.getElementById('fileInput');
+        const display = document.getElementById('fileNameDisplay');
+        if (input.files && input.files.length > 0) {
+            display.textContent = `Selected: ${input.files[0].name}`;
+        } else {
+            display.textContent = '';
+        }
+    }
+
+    function showStatus(msg, isSuccess) {
+        const statusDiv = document.getElementById('status');
+        statusDiv.textContent = msg;
+        statusDiv.className = isSuccess ? 'status-success' : 'status-error';
+    }
+
+    function clearStatus() {
+        const statusDiv = document.getElementById('status');
+        statusDiv.className = '';
+        statusDiv.textContent = '';
+    }
+
+    async function handleFileUpload(e) {
+        e.preventDefault();
+        const fileInput = document.getElementById('fileInput');
+        if (!fileInput.files[0]) return;
+
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+        const btn = e.target.querySelector('button');
+        btn.textContent = 'Uploading...';
+
+        try {
+            const res = await fetch(`${API_URL}/upload/file`, { method: 'POST', body: formData });
+            const data = await res.json();
+            if (res.ok) {
+                showStatus(data.message, true);
+                fileInput.value = '';
+                updateFileName();
+            } else {
+                showStatus(data.detail || 'Upload failed.', false);
+            }
+        } catch (err) {
+            showStatus('Server error. Is FastAPI running on port 8000?', false);
+        } finally {
+            btn.textContent = 'Upload File';
+        }
+    }
+
+    async function handleTextUpload(e) {
+        e.preventDefault();
+        const textInput = document.getElementById('textInput');
+        const btn = e.target.querySelector('button');
+        btn.textContent = 'Saving...';
+
+        const formData = new FormData();
+        formData.append('text', textInput.value);
+
+        try {
+            const res = await fetch(`${API_URL}/upload/text`, { method: 'POST', body: formData });
+            const data = await res.json();
+            if (res.ok) {
+                showStatus(data.message, true);
+                textInput.value = '';
+            } else {
+                showStatus(data.detail || 'Upload failed.', false);
+            }
+        } catch (err) {
+            showStatus('Server error. Is FastAPI running on port 8000?', false);
+        } finally {
+            btn.textContent = 'Convert to .txt & Save';
+        }
+    }
+</script>
+
+</body>
+</html>
