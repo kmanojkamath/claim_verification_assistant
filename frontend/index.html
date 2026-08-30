@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Satyata — The Verification Bureau</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #EFEEE5;
+    --paper-alt: #E5E2D5;
+    --card: #F8F7F1;
+    --ink: #20242A;
+    --ink-soft: #585F63;
+    --ink-faint: #8B9096;
+    --line: #CBC7B7;
+    --line-strong: #AFA994;
+    --brass: #8E6F2E;
+    --brass-soft: #B99A55;
+    --verified: #1E6B49;
+    --verified-bg: #E1EEE3;
+    --false: #A03A2C;
+    --false-bg: #F2E0DA;
+    --unverifiable: #9C6F1E;
+    --unverifiable-bg: #EFE5CD;
+    --radius: 3px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100vh; display: flex; flex-direction: column; }
+
+  body {
+    background: var(--paper);
+    background-image: radial-gradient(circle at 1px 1px, rgba(32,36,42,0.045) 1px, transparent 0);
+    background-size: 22px 22px;
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--brass-soft); color: #fff; }
+  a { color: var(--brass); }
+
+  .masthead {
+    border-bottom: 1.5px solid var(--ink);
+    padding: 22px 32px 16px;
+    display: flex; align-items: flex-end; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px; background: var(--paper);
+  }
+  .masthead-left { display: flex; align-items: center; gap: 14px; }
+  .seal-mark {
+    width: 40px; height: 40px; border-radius: 50%;
+    border: 1.5px solid var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; flex-shrink: 0;
+  }
+  .seal-mark::before {
+    content: ""; position: absolute; inset: 4px;
+    border: 1px dashed var(--line-strong); border-radius: 50%;
+  }
+  .seal-mark span { font-family: 'Fraunces', serif; font-weight: 600; font-size: 15px; }
+  .masthead h1 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 30px; margin: 0; line-height: 1.1; }
+  .masthead .tagline { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-soft); margin-top: 3px; }
+  .masthead-right { text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--ink-soft); line-height: 1.6; }
+  .masthead-right b { color: var(--ink); font-weight: 500; }
+
+  .wrap {
+    max-width: 1180px; margin: 0 auto; padding: 34px 32px 60px;
+    display: grid; grid-template-columns: 400px 1fr; gap: 26px; align-items: start; flex: 1; width: 100%;
+  }
+  @media (max-width: 880px) { .wrap { grid-template-columns: 1fr; padding: 24px 18px 48px; } }
+
+  .panel { background: var(--card); border: 1px solid var(--line-strong); border-radius: var(--radius); }
+  .panel-head { padding: 14px 20px; border-bottom: 1px solid var(--line); }
+  .panel-head .eyebrow { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--brass); }
+  .panel-head h2 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 17px; margin: 2px 0 0; }
+
+  .intake-body { padding: 20px; }
+  .tab-buttons { display: flex; border: 1px solid var(--line-strong); border-radius: var(--radius); overflow: hidden; margin-bottom: 16px; }
+  .tab-buttons button {
+    flex: 1; background: transparent; border: none; border-right: 1px solid var(--line-strong);
+    padding: 9px 6px; font-family: 'Inter', sans-serif; font-size: 12.5px; font-weight: 500;
+    color: var(--ink-soft); cursor: pointer; letter-spacing: 0.02em;
+  }
+  .tab-buttons button:last-child { border-right: none; }
+  .tab-buttons button.active { background: var(--ink); color: var(--paper); }
+  .tab-buttons button:not(.active):hover { background: var(--paper-alt); }
+
+  .upload-section { display: flex; flex-direction: column; gap: 16px; animation: fadeIn 0.25s ease; }
+  .hidden { display: none !important; }
+
+  .drop-zone {
+    border: 1.5px dashed var(--line-strong); border-radius: var(--radius); background: var(--paper-alt);
+    padding: 26px 16px; text-align: center; cursor: pointer; transition: border-color 0.15s, background 0.15s;
+  }
+  .drop-zone:hover, .drop-zone.drag { border-color: var(--brass); background: #fff; }
+  .drop-zone svg { width: 34px; height: 34px; margin: 0 auto 10px; fill: none; stroke: var(--ink-soft); stroke-width: 1.5; }
+  .drop-zone-text { font-size: 13px; color: var(--ink); font-weight: 500; }
+  .drop-zone-text span { color: var(--brass); }
+  .drop-zone-hint { font-size: 11.5px; color: var(--ink-faint); margin-top: 4px; display: block; }
+  #fileInput { display: none; }
+  #fileNameDisplay { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--brass); text-align: center; min-height: 18px; }
+
+  textarea {
+    width: 100%; height: 150px; padding: 12px 13px; border-radius: var(--radius);
+    border: 1px solid var(--line-strong); resize: vertical; font-size: 13.5px; line-height: 1.55; color: var(--ink); background: #fff;
+  }
+  textarea:focus { outline: none; border-color: var(--brass); box-shadow: 0 0 0 3px rgba(142, 111, 46, 0.15); }
+  .file-note { font-size: 11px; color: var(--ink-faint); line-height: 1.5; }
+
+  .btn-submit {
+    width: 100%; margin-top: 8px; background: var(--ink); color: var(--paper); border: none;
+    border-radius: var(--radius); padding: 12px 14px; font-size: 13px; font-weight: 600;
+    letter-spacing: 0.03em; cursor: pointer; text-transform: uppercase; transition: background 0.15s;
+  }
+  .btn-submit:hover { background: #000; }
+
+  .report-body { padding: 22px 24px 26px; min-height: 420px; position: relative; }
+  .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 380px; text-align: center; color: var(--ink-faint); }
+  .empty-state .es-icon { width: 54px; height: 54px; border: 1px dashed var(--line-strong); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; font-family: 'Fraunces', serif; font-size: 22px; color: var(--line-strong); }
+  .empty-state p { font-size: 13px; max-width: 280px; line-height: 1.6; margin: 0; }
+  .empty-state .es-title { font-family: 'Fraunces', serif; font-size: 16px; color: var(--ink-soft); margin-bottom: 6px; }
+
+  .loading-state { display: none; min-height: 380px; flex-direction: column; align-items: center; justify-content: center; }
+  .loading-state.active { display: flex !important; }
+  .scan-box { width: 100%; max-width: 340px; height: 6px; background: var(--paper-alt); border: 1px solid var(--line-strong); border-radius: 2px; overflow: hidden; position: relative; margin-bottom: 18px; }
+  .scan-bar { position: absolute; top: 0; left: -40%; width: 40%; height: 100%; background: var(--brass); animation: scan 1.1s ease-in-out infinite; }
+  @keyframes scan { 0%{left:-40%;} 50%{left:60%;} 100%{left:100%;} }
+  .loading-state .lt { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--ink-soft); }
+
+  .result-state { display: none; }
+  .result-state.active { display: block !important; animation: fadeIn .25s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .dossier-top { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--line); padding-bottom: 16px; margin-bottom: 18px; gap: 16px; }
+  .dossier-top .claim-label { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-faint); margin-bottom: 6px; }
+  .dossier-top .claim-text { font-family: 'Fraunces', serif; font-size: 16px; line-height: 1.4; max-width: 640px; }
+
+  .stamp { width: 112px; height: 112px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: rotate(-9deg) scale(0.4); opacity: 0; position: relative; flex-shrink: 0; }
+  .stamp.show { animation: thud .5s cubic-bezier(.2,1.4,.4,1) forwards; }
+  @keyframes thud { 0%{transform:rotate(-9deg) scale(2.2); opacity:0;} 55%{transform:rotate(-9deg) scale(0.92); opacity:1;} 75%{transform:rotate(-9deg) scale(1.04);} 100%{transform:rotate(-9deg) scale(1); opacity:1;} }
+  .stamp-ring { position: absolute; inset: 0; border-radius: 50%; border: 3px solid currentColor; }
+  .stamp-ring::before { content: ""; position: absolute; inset: 7px; border-radius: 50%; border: 1px solid currentColor; opacity: 0.55; }
+  .stamp-text { font-family: 'Fraunces', serif; font-weight: 600; font-size: 14px; text-align: center; letter-spacing: 0.03em; text-transform: uppercase; line-height: 1.15; padding: 0 10px; }
+  .stamp.verdict-true { color: var(--verified); }
+  .stamp.verdict-false { color: var(--false); }
+  .stamp.verdict-unverifiable { color: var(--unverifiable); }
+
+  .summary-row { display: grid; grid-template-columns: auto 1fr; gap: 24px; margin-bottom: 26px; align-items: center; }
+  @media (max-width: 640px) { .summary-row { grid-template-columns: 1fr; } }
+  .gauge-wrap { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .gauge-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-faint); }
+  .verdict-badge { font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 2px; }
+  .verdict-badge.verdict-true { background: var(--verified-bg); color: var(--verified); }
+  .verdict-badge.verdict-false { background: var(--false-bg); color: var(--false); }
+  .verdict-badge.verdict-unverifiable { background: var(--unverifiable-bg); color: var(--unverifiable); }
+  .verdict-desc { font-size: 12.5px; color: var(--ink-soft); line-height: 1.5; margin-top: 8px; }
+
+  .ledger-head { display: flex; align-items: baseline; justify-content: space-between; border-bottom: 1px solid var(--ink); padding-bottom: 8px; margin-bottom: 2px; }
+  .ledger-head h3 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 15px; margin: 0; }
+  .ledger-head .count { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--ink-faint); }
+  .exhibit { display: grid; grid-template-columns: 34px 1fr auto; gap: 14px; align-items: center; padding: 13px 0; border-bottom: 1px solid var(--line); }
+  .exhibit:last-child { border-bottom: none; }
+  .exhibit-num { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--brass); border: 1px solid var(--brass-soft); border-radius: 2px; text-align: center; padding: 3px 0; }
+  .exhibit-main .exhibit-host { font-size: 13px; font-weight: 500; color: var(--ink); display: flex; align-items: center; gap: 6px; }
+  .exhibit-main .exhibit-host .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--verified); flex-shrink: 0; }
+  .exhibit-main a { font-size: 11.5px; color: var(--ink-soft); text-decoration: none; word-break: break-all; display: block; margin-top: 2px; }
+  .exhibit-main a:hover { color: var(--brass); text-decoration: underline; }
+  .exhibit-conf { text-align: right; min-width: 96px; }
+  .exhibit-conf .ec-num { font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; color: var(--ink); }
+  .conf-bar { width: 88px; height: 4px; background: var(--paper-alt); border-radius: 2px; overflow: hidden; margin-top: 5px; border: 1px solid var(--line); }
+  .conf-fill { height: 100%; background: var(--brass); }
+
+  .filed-note { margin-top: 22px; padding-top: 14px; border-top: 1px dashed var(--line-strong); font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--ink-faint); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
+  .raw-toggle { cursor: pointer; text-decoration: underline; }
+  pre.raw-json { display: none; margin-top: 8px; background: var(--paper-alt); border: 1px solid var(--line); border-radius: 2px; padding: 12px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; line-height: 1.5; overflow-x: auto; color: var(--ink-soft); }
+  pre.raw-json.show { display: block !important; }
+
+  footer { background-color: #0f172a; color: #ffffff; padding: 20px; text-align: center; font-size: 20px; font-weight: 500; border-top: 1px solid #1e293b; width: 100%; letter-spacing: 0.05em; }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-left">
+    <div class="seal-mark"><span>VB</span></div>
+    <div>
+      <h1>Satyata</h1>
+      <div class="tagline">Claims cross-referenced against public record</div>
+    </div>
+  </div>
+  <div class="masthead-right">
+    FILE NO. <b id="file-no">2026-000147</b><br>
+    <span id="today-date">30 AUG 2026</span>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="panel">
+    <div class="panel-head">
+      <div class="eyebrow">New submission</div>
+      <h2>File a claim</h2>
+    </div>
+    <div class="intake-body">
+      <div class="tab-buttons">
+        <button id="fileTabBtn" type="button" class="active" onclick="switchTab('file')">File Upload</button>
+        <button id="textTabBtn" type="button" onclick="switchTab('text')">Raw Text</button>
+      </div>
+
+      <div id="fileForm" class="upload-section">
+        <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5h10.5a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0017.25 4.5H6.75A2.25 2.25 0 004.5 6.75v10.5A2.25 2.25 0 006.75 19.5z"/></svg>
+          <div class="drop-zone-text">Click to browse or <span>drag file here</span></div>
+          <span class="drop-zone-hint">Supports PDF, PNG, JPG, TXT</span>
+        </div>
+        <input type="file" id="fileInput" accept=".pdf,image/png,image/jpeg,image/jpg,image/avif,.txt" onchange="updateFileName()">
+        <div id="fileNameDisplay"></div>
+        <div class="file-note">Submissions are checked against official government sources, gazettes and public registries.</div>
+        <button type="button" class="btn-submit" onclick="handleFileUpload()">Upload & Verify</button>
+      </div>
+
+      <div id="textForm" class="upload-section hidden">
+        <textarea id="textInput" placeholder="Paste or type raw text content to verify..."></textarea>
+        <div class="file-note">Text submissions will be processed and matched against the evidence database.</div>
+        <button type="button" class="btn-submit" onclick="handleTextUpload()">Submit for Verification</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div class="eyebrow">Case report</div>
+      <h2>Dossier</h2>
+    </div>
+    <div class="report-body">
+      <div class="empty-state" id="empty-state">
+        <div class="es-icon">?</div>
+        <div class="es-title">No claim on file</div>
+        <p>File a claim on the left — as text or a document file — to generate a verification dossier.</p>
+      </div>
+
+      <div class="loading-state" id="loading-state">
+        <div class="scan-box"><div class="scan-bar"></div></div>
+        <div class="lt" id="loading-text">Cross-referencing public records&hellip;</div>
+      </div>
+
+      <div class="result-state" id="result-state">
+        <div class="dossier-top">
+          <div>
+            <div class="claim-label">Claim under review</div>
+            <div class="claim-text" id="report-claim">&mdash;</div>
+          </div>
+          <div class="stamp" id="stamp">
+            <div class="stamp-ring"></div>
+            <div class="stamp-text" id="stamp-text">&mdash;</div>
+          </div>
+        </div>
+
+        <div class="summary-row">
+          <div class="gauge-wrap">
+            <svg width="86" height="86" viewBox="0 0 86 86">
+              <circle cx="43" cy="43" r="36" fill="none" stroke="var(--paper-alt)" stroke-width="7"></circle>
+              <circle id="gauge-arc" cx="43" cy="43" r="36" fill="none" stroke="var(--brass)" stroke-width="7"
+                stroke-linecap="round" stroke-dasharray="226" stroke-dashoffset="226" transform="rotate(-90 43 43)"></circle>
+              <text x="43" y="48" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="15" fill="var(--ink)" id="gauge-center">0.0</text>
+            </svg>
+            <div class="gauge-label">Confidence</div>
+          </div>
+          <div>
+            <div class="verdict-line">
+              <span class="verdict-badge" id="verdict-badge">&mdash;</span>
+            </div>
+            <div class="verdict-desc" id="verdict-desc"></div>
+          </div>
+        </div>
+
+        <div class="ledger-head">
+          <h3>Evidence ledger</h3>
+          <span class="count" id="exhibit-count">0 exhibits</span>
+        </div>
+        <div id="exhibit-list"></div>
+
+        <div class="filed-note">
+          <span>Filed <span id="filed-time">&mdash;</span></span>
+          <span id="raw-toggle" class="raw-toggle">View raw response &darr;</span>
+        </div>
+        <pre class="raw-json" id="raw-json"></pre>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer>SATYAMEVA JAYATE</footer>
+
+<script>
+const API_URL = "http://127.0.0.1:8000";
+
+document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
+document.getElementById('file-no').textContent = '2026-' + String(Math.floor(100000 + Math.random() * 899999));
+
+function switchTab(tab) {
+    document.getElementById('fileForm').classList.toggle('hidden', tab !== 'file');
+    document.getElementById('textForm').classList.toggle('hidden', tab !== 'text');
+    document.getElementById('fileTabBtn').classList.toggle('active', tab === 'file');
+    document.getElementById('textTabBtn').classList.toggle('active', tab === 'text');
+}
+
+const dropZone = document.getElementById('dropZone');
+['dragenter', 'dragover'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.classList.add('drag'); }));
+['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.classList.remove('drag'); }));
+dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    if (e.dataTransfer.files.length) {
+        document.getElementById('fileInput').files = e.dataTransfer.files;
+        updateFileName();
+    }
+});
+
+function updateFileName() {
+    const input = document.getElementById('fileInput');
+    const display = document.getElementById('fileNameDisplay');
+    display.textContent = input.files.length ? `SELECTED: ${input.files[0].name.toUpperCase()}` : '';
+}
+
+function startLoading() {
+    document.getElementById('empty-state').style.display = 'none';
+    document.getElementById('result-state').classList.remove('active');
+    document.getElementById('loading-state').classList.add('active');
+}
+
+function stopLoading() {
+    document.getElementById('loading-state').classList.remove('active');
+}
+
+async function handleFileUpload() {
+    const fileInput = document.getElementById('fileInput');
+    if (!fileInput.files[0]) {
+        alert("Please select a file first.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+    
+    startLoading();
+    try {
+        const res = await fetch(`${API_URL}/upload/file`, { method: 'POST', body: formData });
+        const data = await res.json();
+        stopLoading();
+        
+        if (res.ok) {
+            renderReport(`File submission: "${fileInput.files[0].name}"`, data);
+        } else {
+            alert(data.detail || 'Processing failed.');
+            document.getElementById('empty-state').style.display = 'flex';
+        }
+    } catch (err) {
+        stopLoading();
+        console.error(err);
+        alert('Server connection error. Ensure your FastAPI server is running at http://127.0.0.1:8000.');
+        document.getElementById('empty-state').style.display = 'flex';
+    }
+}
+
+async function handleTextUpload() {
+    const textInput = document.getElementById('textInput');
+    const textVal = textInput.value.trim();
+    if (!textVal) {
+        alert("Please enter text content.");
+        return;
+    }
+
+    startLoading();
+    try {
+        const res = await fetch(`${API_URL}/upload/text`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: textVal })
+        });
+        const data = await res.json();
+        stopLoading();
+        
+        if (res.ok) {
+            renderReport(textVal, data);
+        } else {
+            alert(data.detail || 'Processing failed.');
+            document.getElementById('empty-state').style.display = 'flex';
+        }
+    } catch (err) {
+        stopLoading();
+        console.error(err);
+        alert('Server connection error. Ensure your FastAPI server is running at http://127.0.0.1:8000.');
+        document.getElementById('empty-state').style.display = 'flex';
+    }
+}
+
+function normaliseVerdict(v) {
+    const s = (v || '').toString().trim().toLowerCase();
+    if (s === 'true' || s === 'verified') return 'true';
+    if (s === 'false') return 'false';
+    return 'unverifiable';
+}
+
+function hostFromUrl(url) {
+    try { return new URL(url).hostname.replace(/^www\./, ''); }
+    catch (e) { return url; }
+}
+
+function renderReport(claimText, data) {
+    const norm = normaliseVerdict(data.verdict);
+    document.getElementById('report-claim').textContent = claimText;
+
+    const stampEl = document.getElementById('stamp');
+    stampEl.className = 'stamp verdict-' + norm;
+    document.getElementById('stamp-text').textContent = norm === 'true' ? 'Verified' : (norm === 'false' ? 'False' : 'Unverifiable');
+    void stampEl.offsetWidth; 
+    stampEl.classList.add('show');
+
+    const badge = document.getElementById('verdict-badge');
+    badge.className = 'verdict-badge verdict-' + norm;
+    badge.textContent = norm === 'true' ? 'Claim verified' : (norm === 'false' ? 'Claim false' : 'Unverifiable');
+
+    const descMap = {
+        true: 'The claim matches records found in official government sources.',
+        false: 'The claim contradicts records found in official government sources.',
+        unverifiable: 'No sufficient public record could confirm or refute this claim.'
+    };
+    document.getElementById('verdict-desc').textContent = descMap[norm];
+
+    const confidences = (data.confidence || []).map(Number).filter(n => !isNaN(n));
+    const avg = confidences.length ? (confidences.reduce((a, b) => a + b, 0) / confidences.length) : 0;
+    const pct = Math.max(0, Math.min(10, avg)) / 10;
+    const arc = document.getElementById('gauge-arc');
+    arc.style.stroke = norm === 'true' ? 'var(--verified)' : (norm === 'false' ? 'var(--false)' : 'var(--unverifiable)');
+    
+    setTimeout(() => { 
+        arc.style.transition = 'stroke-dashoffset .7s ease'; 
+        arc.setAttribute('stroke-dashoffset', String(226 * (1 - pct))); 
+    }, 50);
+    document.getElementById('gauge-center').textContent = avg.toFixed(1);
+
+    const citations = data.citations || [];
+    const list = document.getElementById('exhibit-list');
+    list.innerHTML = '';
+    document.getElementById('exhibit-count').textContent = `${citations.length} exhibit${citations.length === 1 ? '' : 's'}`;
+
+    citations.forEach((url, i) => {
+        const conf = confidences[i] !== undefined ? confidences[i] : (confidences.length === 1 ? confidences[0] : null);
+        const row = document.createElement('div');
+        row.className = 'exhibit';
+        row.innerHTML = `
+            <div class="exhibit-num">${String(i + 1).padStart(2, '0')}</div>
+            <div class="exhibit-main">
+                <div class="exhibit-host"><span class="dot"></span>${hostFromUrl(url)}</div>
+                <a href="${url}" target="_blank" rel="noopener">${url}</a>
+            </div>
+            <div class="exhibit-conf">
+                ${conf !== null ? `<div class="ec-num">${Number(conf).toFixed(1)} / 10</div><div class="conf-bar"><div class="conf-fill" style="width:${Math.max(0, Math.min(10, conf)) * 10}%"></div></div>` : '<div class="ec-num" style="color:var(--ink-faint)">&mdash;</div>'}
+            </div>`;
+        list.appendChild(row);
+    });
+
+    document.getElementById('filed-time').textContent = `${new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}, ${new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}`;
+    document.getElementById('raw-json').textContent = JSON.stringify(data, null, 2);
+
+    document.getElementById('result-state').classList.add('active');
+}
+
+document.getElementById('raw-toggle').addEventListener('click', function() {
+    const pre = document.getElementById('raw-json');
+    pre.classList.toggle('show');
+    this.textContent = pre.classList.contains('show') ? 'Hide raw response ↑' : 'View raw response ↓';
+});
+</script>
+</body>
+</html>
